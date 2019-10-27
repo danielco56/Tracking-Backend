@@ -54,7 +54,7 @@ module.exports = {
       } else {
         if (bcrypt.compareSync(req.body.password, userInfo.password)) {
           const token = jwt.sign(
-            { id: userInfo._id },
+            { id: userInfo._id, role: userInfo.role },
             req.app.get("secretKey"),
             { expiresIn: "720h" }
           );
@@ -80,6 +80,30 @@ module.exports = {
           });
         }
       }
+    });
+  },
+
+  getPaginatedUsers: function(req, res) {
+    let pageNo = parseInt(req.query.pageNo);
+    let size = parseInt(req.query.size);
+    let query = {};
+
+    if (pageNo < 0 || pageNo === 0) {
+      return res.status(404).send({
+        status: "failed",
+        message: "Invalid page number, should start with 1"
+      });
+    }
+    query.skip = size * (pageNo - 1);
+    query.limit = size;
+
+    userModel.find({}, {}, query, function(err, result) {
+      if (err) {
+        return res.status(404).send({
+          status: "failed",
+          message: "Couldn't send entries"
+        });
+      } else res.json({ status: "success", data: result });
     });
   }
 };

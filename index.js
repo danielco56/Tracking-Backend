@@ -1,11 +1,12 @@
 const express = require("express");
 const logger = require("morgan");
 const users = require("./src/routes/user-routes");
+const admin = require("./src/routes/admin-routes");
+const location = require("./src/routes/location-routes");
 const bodyParser = require("body-parser");
 const mongoose = require("./src/config/database"); //database configuration
 const jwt = require("jsonwebtoken");
 const app = express();
-
 app.set("secretKey", "trackingbackend"); // jwt secret token
 
 // connection to mongodb
@@ -21,12 +22,9 @@ app.get("/", function(req, res) {
 
 // public routes
 app.use("/api/auth", users);
-// app.use("/api/upload", upload);
-// // private routes
-// app.use("/api/challenge", validateUser, challenges);
-// app.use("/api/post", validateUser, posts);
-// app.use("/api/profile", validateUser, profile);
-// app.use("/api/leaderboard", validateUser, leaderboard);
+// private routes
+app.use("/api/location", validateUser, location);
+app.use("/api/admin", validateUser, admin);
 
 // express doesn't consider not found 404 as an error so we need to handle 404 explicitly
 // handle 404 error
@@ -54,8 +52,8 @@ function validateUser(req, res, next) {
     if (err) {
       res.json({ status: "error", message: err.message, data: null });
     } else {
-      console.log(decoded);
       req.body._id = decoded.id;
+      req.body.role = decoded.role;
       next();
     }
   });
