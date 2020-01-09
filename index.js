@@ -6,6 +6,7 @@ const location = require("./src/routes/location-routes");
 const bodyParser = require("body-parser");
 const mongoose = require("./src/config/database"); //database configuration
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 const app = express();
 app.set("secretKey", "trackingbackend"); // jwt secret token
 
@@ -14,12 +15,13 @@ mongoose.connection.on(
   "error",
   console.error.bind(console, "MongoDB connection error:")
 );
+app.use(logger('combined'))
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: false, limit: "50mb" }));
 app.get("/", function(req, res) {
   res.json({ message: "Server is up" });
 });
-
+app.use(cors({ origin: "http://localhost:8000" }));
 // public routes
 app.use("/api/auth", users);
 // private routes
