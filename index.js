@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("./src/config/database"); //database configuration
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const port = process.env.PORT || 3000
 const app = express();
 app.set("secretKey", "trackingbackend"); // jwt secret token
 
@@ -21,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false, limit: "50mb" }));
 app.get("/", function(req, res) {
   res.json({ message: "Server is up" });
 });
-app.use(cors({ origin: "http://localhost:8000" }));
+// app.use(cors({ origin: "http://localhost:8000" }));
 // public routes
 app.use("/api/auth", users);
 // private routes
@@ -61,6 +62,6 @@ function validateUser(req, res, next) {
   });
 }
 
-app.listen(3000, function() {
-  console.log("Node server listening on port 3000");
+app.listen(port, function() {
+  console.log(`Node server listening on port ${port}`);
 });
